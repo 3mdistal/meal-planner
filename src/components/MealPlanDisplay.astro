@@ -1,0 +1,42 @@
+---
+import WeeklyItems from "./WeeklyItems.astro";
+
+const { days, initialMealPlan, initialWeeklyItems } = Astro.props;
+---
+
+<div id="mealPlanDisplay">
+  {days.map((day: string) => (
+    <div class="day-plan">
+      <h3>{day}</h3>
+      <p>
+        Breakfast:{" "}
+        <span class="meal breakfast-main">
+          {initialMealPlan[day].breakfast.main || "Not planned yet"}
+        </span>
+      </p>
+      <p>
+        Breakfast Sides:{" "}
+        <span class="meal breakfast-sides">
+          {initialMealPlan[day].breakfast.sides.length > 0
+            ? initialMealPlan[day].breakfast.sides.join(", ")
+            : "Not planned yet"}
+        </span>
+      </p>
+      <p>
+        Dinner:{" "}
+        <span class="meal dinner-main">
+          {initialMealPlan[day].dinner.main || "Not planned yet"}
+        </span>
+      </p>
+      <p>
+        Dinner Sides:{" "}
+        <span class="meal dinner-sides">
+          {initialMealPlan[day].dinner.sides.length > 0
+            ? initialMealPlan[day].dinner.sides.join(", ")
+            : "Not planned yet"}
+        </span>
+      </p>
+    </div>
+  ))}
+  <WeeklyItems {initialWeeklyItems} />
+</div>

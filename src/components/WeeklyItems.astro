@@ -1,0 +1,28 @@
+---
+const { initialWeeklyItems } = Astro.props;
+---
+
+<div class="weekly-items">
+  <h3>Weekly Items</h3>
+  <p>
+    Snacks: <span class="weekly snacks">
+      {initialWeeklyItems.snacks.length > 0
+        ? initialWeeklyItems.snacks.join(", ")
+        : "Not planned yet"}
+    </span>
+  </p>
+  <p>
+    Desserts: <span class="weekly desserts">
+      {initialWeeklyItems.desserts.length > 0
+        ? initialWeeklyItems.desserts.join(", ")
+        : "Not planned yet"}
+    </span>
+  </p>
+  <p>
+    Fruits: <span class="weekly fruits">
+      {initialWeeklyItems.fruits.length > 0
+        ? initialWeeklyItems.fruits.join(", ")
+        : "Not planned yet"}
+    </span>
+  </p>
+</div>
