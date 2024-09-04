@@ -132,6 +132,8 @@ const initialWeeklyItems: WeeklyItems = {
         </fieldset>
 
         <button type="submit">Save Meal Plan</button>
+        <button type="button" id="copyToClipboard">Copy to Clipboard</button>
+        <button type="button" id="clearMealPlan" class="clear-button">Clear Meal Plan</button>
       </form>
     </div>
 
@@ -260,6 +262,17 @@ const initialWeeklyItems: WeeklyItems = {
       width: 100%;
       height: 5em;
     }
+
+    #copyToClipboard {
+      margin-left: 1rem;
+      background-color: #4CAF50;
+    }
+
+    .clear-button {
+      margin-left: 1rem;
+      background-color: #ff4136;
+      color: white;
+    }
   </style>
 
   <script>
@@ -283,6 +296,63 @@ const initialWeeklyItems: WeeklyItems = {
       desserts: [],
       fruits: [],
     };
+
+    // Add this function to save the meal plan to localStorage
+    function saveMealPlan() {
+      localStorage.setItem('mealPlan', JSON.stringify(mealPlan));
+      localStorage.setItem('weeklyItems', JSON.stringify(weeklyItems));
+      alert('Meal plan saved successfully!');
+    }
+
+    // Add this function to load the meal plan from localStorage
+    function loadMealPlan() {
+      const savedMealPlan = localStorage.getItem('mealPlan');
+      const savedWeeklyItems = localStorage.getItem('weeklyItems');
+      
+      if (savedMealPlan) {
+        Object.assign(mealPlan, JSON.parse(savedMealPlan));
+      }
+      if (savedWeeklyItems) {
+        Object.assign(weeklyItems, JSON.parse(savedWeeklyItems));
+      }
+      
+      updateMealPlanDisplay(mealPlan, weeklyItems);
+      populateFormFields();
+    }
+
+    // Add this function to populate form fields with saved data
+    function populateFormFields() {
+      for (const day in mealPlan) {
+        for (const mealType in mealPlan[day]) {
+          const meal = mealPlan[day][mealType as keyof typeof mealPlan[typeof day]];
+          const mainInput = document.getElementById(`${day}-${mealType}-main`) as HTMLInputElement;
+          if (mainInput) mainInput.value = meal.main;
+
+          const sidesMultiSelect = document.getElementById(`${day}-${mealType}-sides`);
+          if (sidesMultiSelect) {
+            const event = new CustomEvent('setvalues', { detail: meal.sides });
+            sidesMultiSelect.dispatchEvent(event);
+          }
+        }
+      }
+
+      for (const item in weeklyItems) {
+        const multiSelect = document.getElementById(item);
+        if (multiSelect) {
+          const event = new CustomEvent('setvalues', { detail: weeklyItems[item as keyof WeeklyItems] });
+          multiSelect.dispatchEvent(event);
+        }
+      }
+    }
+
+    // Modify the form submit event listener
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      saveMealPlan();
+    });
+
+    // Load the saved meal plan when the page loads
+    document.addEventListener('DOMContentLoaded', loadMealPlan);
 
     // Update handleSelectChange function
     function handleSelectChange(event: Event) {
@@ -378,5 +448,97 @@ const initialWeeklyItems: WeeklyItems = {
       `;
       mealPlanDisplay.innerHTML = html;
     }
+
+    const copyToClipboardButton = document.getElementById('copyToClipboard') as HTMLButtonElement;
+
+    copyToClipboardButton.addEventListener('click', () => {
+      const formattedMealPlan = formatMealPlan(mealPlan, weeklyItems);
+      navigator.clipboard.writeText(formattedMealPlan).then(() => {
+        alert('Meal plan copied to clipboard!');
+      }).catch(err => {
+        console.error('Failed to copy meal plan: ', err);
+      });
+    });
+
+    function formatMealPlan(mealPlan: MealPlan, weeklyItems: WeeklyItems): string {
+      const days = [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+      ];
+
+      let formattedPlan = "📅 This Week's Meal Plan 📅\n\n";
+
+      for (const day of days) {
+        const meals = mealPlan[day] || {
+          breakfast: { main: "", sides: [] },
+          dinner: { main: "", sides: [] },
+        };
+
+        formattedPlan += `${day}:\n`;
+        formattedPlan += `🍳 Breakfast: ${meals.breakfast.main || "Not planned yet"}\n`;
+        if (meals.breakfast.sides.length > 0) {
+          formattedPlan += `   Sides: ${meals.breakfast.sides.join(", ")}\n`;
+        }
+        formattedPlan += `🍽️ Dinner: ${meals.dinner.main || "Not planned yet"}\n`;
+        if (meals.dinner.sides.length > 0) {
+          formattedPlan += `   Sides: ${meals.dinner.sides.join(", ")}\n`;
+        }
+        formattedPlan += '\n';
+      }
+
+      formattedPlan += "Weekly Items:\n";
+      formattedPlan += `🍿 Snacks: ${weeklyItems.snacks.length > 0 ? weeklyItems.snacks.join(", ") : "Not planned yet"}\n`;
+      formattedPlan += `🍰 Desserts: ${weeklyItems.desserts.length > 0 ? weeklyItems.desserts.join(", ") : "Not planned yet"}\n`;
+      formattedPlan += `🍎 Fruits: ${weeklyItems.fruits.length > 0 ? weeklyItems.fruits.join(", ") : "Not planned yet"}\n`;
+
+      return formattedPlan;
+    }
+
+    const clearButton = document.getElementById('clearMealPlan') as HTMLButtonElement;
+
+    function clearMealPlan() {
+      // Clear mealPlan object
+      for (const day in mealPlan) {
+        mealPlan[day] = {
+          breakfast: { main: "", sides: [] },
+          dinner: { main: "", sides: [] },
+        };
+      }
+
+      // Clear weeklyItems object
+      for (const item in weeklyItems) {
+        weeklyItems[item as keyof WeeklyItems] = [];
+      }
+
+      // Clear localStorage
+      localStorage.removeItem('mealPlan');
+      localStorage.removeItem('weeklyItems');
+
+      // Update display
+      updateMealPlanDisplay(mealPlan, weeklyItems);
+
+      // Clear form fields
+      const inputs = form.querySelectorAll('input[type="text"], input[list]');
+      inputs.forEach((input) => {
+        if (input instanceof HTMLInputElement) {
+          input.value = '';
+        }
+      });
+
+      const multiSelects = form.querySelectorAll(".multi-select");
+      multiSelects.forEach((multiSelect) => {
+        const event = new CustomEvent('setvalues', { detail: [] });
+        multiSelect.dispatchEvent(event);
+      });
+
+      alert('Meal plan cleared successfully!');
+    }
+
+    clearButton.addEventListener('click', clearMealPlan);
   </script>
 </MainLayout>

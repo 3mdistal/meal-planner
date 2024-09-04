@@ -99,12 +99,11 @@ const { id, label, options, placeholder = "Type to search options" } = Astro.pro
     const input = multiSelect.querySelector('input[type="text"]') as HTMLInputElement;
     const options = multiSelect.querySelector('.options') as HTMLDivElement;
     const checkboxes = options.querySelectorAll('input[type="checkbox"]');
-    const selectedOptionsContainer = multiSelect.querySelector('.selected-options') as HTMLDivElement;
 
     input.addEventListener('focus', () => {
       options.style.display = 'block';
       // Reset the display of all options when focusing on the input
-      checkboxes.forEach((checkbox: HTMLInputElement) => {
+      checkboxes.forEach((checkbox) => {
         const label = checkbox.parentElement as HTMLLabelElement;
         label.style.display = 'block';
       });
@@ -118,7 +117,7 @@ const { id, label, options, placeholder = "Type to search options" } = Astro.pro
 
     input.addEventListener('input', () => {
       const filter = input.value.toLowerCase();
-      checkboxes.forEach((checkbox: HTMLInputElement) => {
+      checkboxes.forEach((checkbox) => {
         const label = checkbox.parentElement as HTMLLabelElement;
         if (label.textContent?.toLowerCase().includes(filter)) {
           label.style.display = 'block';
@@ -141,12 +140,12 @@ const { id, label, options, placeholder = "Type to search options" } = Astro.pro
       }
     });
 
-    checkboxes.forEach((checkbox: HTMLInputElement) => {
+    checkboxes.forEach((checkbox) => {
       checkbox.addEventListener('change', () => {
-        if (checkbox.checked) {
-          addSelectedOption(multiSelect, checkbox.value);
+        if ((checkbox as HTMLInputElement).checked) {
+          addSelectedOption(multiSelect, (checkbox as HTMLInputElement).value);
         } else {
-          removeSelectedOption(multiSelect, checkbox.value);
+          removeSelectedOption(multiSelect, (checkbox as HTMLInputElement).value);
         }
       });
     });
@@ -186,7 +185,7 @@ const { id, label, options, placeholder = "Type to search options" } = Astro.pro
         if (checkbox) {
           checkbox.checked = false;
         }
-        removeSelectedOption(multiSelect, value);
+        removeSelectedOption(multiSelect as HTMLElement, value);
       }
     };
     
@@ -195,5 +194,7 @@ const { id, label, options, placeholder = "Type to search options" } = Astro.pro
   }
 
   // Set up multi-select for all relevant elements
-  document.querySelectorAll('.multi-select').forEach(setupMultiSelect);
+  document.querySelectorAll('.multi-select').forEach((element) => {
+    setupMultiSelect(element as HTMLElement);
+  });
 </script>
