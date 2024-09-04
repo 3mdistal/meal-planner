@@ -10,8 +10,8 @@ This will break down recipes into ingredients and give you a shopping list. The 
 
 ## Stage 3
 
-This will allow you to create your own recipes and add them to your meal plan. The UI will let you now plan more than a week in advance.
+This will allow you to create your own recipes and add them to your meal plan. The UI will be augmented to be able to drag meals around to different days, or even have a "pool" of meals you want to cook that can be dragged into each day.
 
 ## Stage 4
 
-Here, I'll stop using local storage for the app and make it so that the app can connect to an external database. At this point, the app would be usable for people other than me.
+Here, I'll stop using local storage for the app and make it so that the app can connect to an external database. At this point, the app would be usable for people other than me. The UI will also let you now plan more than a week in advance.
