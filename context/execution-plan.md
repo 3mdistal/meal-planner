@@ -7,7 +7,7 @@
 3. ~~Create a predefined meal plan structure (e.g., 7 days, 3 meals per day)~~
 4. ~~Implement a recipe selection interface using Astro components~~
 5. ~~Create a component to display the selected recipes in the meal plan~~
-6. Implement local storage to save and retrieve the meal plan
+6. ~~Implement local storage to save and retrieve the meal plan~~
 
 ## Stage 2: Ingredient Breakdown and Customizable Plan
 
