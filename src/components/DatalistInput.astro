@@ -1,0 +1,17 @@
+---
+interface Props {
+  id: string;
+  label: string;
+  options: Array<{ name: string }>;
+}
+
+const { id, label, options } = Astro.props;
+---
+
+<div>
+  <label for={id}>{label}</label>
+  <input list={`${id}-list`} id={id} name={id} />
+  <datalist id={`${id}-list`}>
+    {options.map((option) => <option value={option.name} />)}
+  </datalist>
+</div>

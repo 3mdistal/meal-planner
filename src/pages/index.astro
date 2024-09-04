@@ -1,0 +1,382 @@
+---
+import MainLayout from "@/layouts/main-layout.astro";
+import { getCollection } from "astro:content";
+import MultiSelect from "@/components/MultiSelect.astro";
+import DatalistInput from "@/components/DatalistInput.astro";
+
+const days = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+] as const;
+
+type Day = (typeof days)[number];
+type Meal = { main: string; sides: string[] };
+type MealPlan = Record<Day, { breakfast: Meal; dinner: Meal }>;
+type WeeklyItems = { snacks: string[]; desserts: string[]; fruits: string[] };
+
+// Add this type definition
+type Recipe = {
+  id: string;
+  collection: string;
+  data: {
+    $schema: string;
+    type: string;
+    name: string;
+  };
+};
+
+const recipesCollection = await getCollection("recipes");
+const alphabetizedRecipes = recipesCollection.sort((a, b) =>
+  a.data.name.localeCompare(b.data.name)
+);
+
+// Modify these functions to map the recipes to the expected format
+const mapRecipesToOptions = (recipes: Recipe[]) =>
+  recipes.map((recipe) => ({ name: recipe.data.name }));
+
+const breakfastRecipes = mapRecipesToOptions(
+  alphabetizedRecipes.filter((recipe) => recipe.data.type === "breakfast")
+);
+const dinnerRecipes = mapRecipesToOptions(
+  alphabetizedRecipes.filter((recipe) => recipe.data.type === "dinner")
+);
+const snacks = mapRecipesToOptions(
+  alphabetizedRecipes.filter((recipe) => recipe.data.type === "snack")
+);
+const sides = mapRecipesToOptions(
+  alphabetizedRecipes.filter((recipe) => recipe.data.type === "side")
+);
+const desserts = mapRecipesToOptions(
+  alphabetizedRecipes.filter((recipe) => recipe.data.type === "dessert")
+);
+const fruits = mapRecipesToOptions(
+  alphabetizedRecipes.filter((recipe) => recipe.data.type === "fruit")
+);
+
+const initialMealPlan: MealPlan = days.reduce((accumulator, day) => {
+  accumulator[day] = {
+    breakfast: { main: "", sides: [] },
+    dinner: { main: "", sides: [] },
+  };
+  return accumulator;
+}, {} as MealPlan);
+
+const initialWeeklyItems: WeeklyItems = {
+  snacks: [],
+  desserts: [],
+  fruits: [],
+};
+---
+
+<MainLayout>
+  <h1>Meal Planner</h1>
+
+  <div class="meal-planner-container">
+    <div class="form-container">
+      <form id="mealPlanForm">
+        {
+          days.map((day) => (
+            <fieldset>
+              <legend>{day}</legend>
+              <DatalistInput
+                id={`${day}-breakfast-main`}
+                label="Breakfast:"
+                options={breakfastRecipes}
+              />
+              <MultiSelect
+                id={`${day}-breakfast-sides`}
+                label="Breakfast Sides:"
+                options={sides}
+                placeholder="Type or select sides"
+              />
+              <DatalistInput
+                id={`${day}-dinner-main`}
+                label="Dinner:"
+                options={dinnerRecipes}
+              />
+              <MultiSelect
+                id={`${day}-dinner-sides`}
+                label="Dinner Sides:"
+                options={sides}
+                placeholder="Type or select sides"
+              />
+            </fieldset>
+          ))
+        }
+
+        <fieldset>
+          <legend>Weekly Items</legend>
+          <MultiSelect
+            id="snacks"
+            label="Snacks:"
+            options={snacks}
+            placeholder="Type or select snacks"
+          />
+          <MultiSelect
+            id="desserts"
+            label="Desserts:"
+            options={desserts}
+            placeholder="Type or select desserts"
+          />
+          <MultiSelect
+            id="fruits"
+            label="Fruits:"
+            options={fruits}
+            placeholder="Type or select fruits"
+          />
+        </fieldset>
+
+        <button type="submit">Save Meal Plan</button>
+      </form>
+    </div>
+
+    <div class="plan-display-container">
+      <h2>This Week's Meal Plan</h2>
+      <div id="mealPlanDisplay">
+        {
+          days.map((day) => (
+            <div class="day-plan">
+              <h3>{day}</h3>
+              <p>
+                Breakfast:{" "}
+                <span class="meal breakfast-main">
+                  {initialMealPlan[day].breakfast.main || "Not planned yet"}
+                </span>
+              </p>
+              <p>
+                Breakfast Sides:{" "}
+                <span class="meal breakfast-sides">
+                  {initialMealPlan[day].breakfast.sides.length > 0
+                    ? initialMealPlan[day].breakfast.sides.join(", ")
+                    : "Not planned yet"}
+                </span>
+              </p>
+              <p>
+                Dinner:{" "}
+                <span class="meal dinner-main">
+                  {initialMealPlan[day].dinner.main || "Not planned yet"}
+                </span>
+              </p>
+              <p>
+                Dinner Sides:{" "}
+                <span class="meal dinner-sides">
+                  {initialMealPlan[day].dinner.sides.length > 0
+                    ? initialMealPlan[day].dinner.sides.join(", ")
+                    : "Not planned yet"}
+                </span>
+              </p>
+            </div>
+          ))
+        }
+        <div class="weekly-items">
+          <h3>Weekly Items</h3>
+          <p>
+            Snacks: <span class="weekly snacks">
+              {
+                initialWeeklyItems.snacks.length > 0
+                  ? initialWeeklyItems.snacks.join(", ")
+                  : "Not planned yet"
+              }
+            </span>
+          </p>
+          <p>
+            Desserts: <span class="weekly desserts">
+              {
+                initialWeeklyItems.desserts.length > 0
+                  ? initialWeeklyItems.desserts.join(", ")
+                  : "Not planned yet"
+              }
+            </span>
+          </p>
+          <p>
+            Fruits: <span class="weekly fruits">
+              {
+                initialWeeklyItems.fruits.length > 0
+                  ? initialWeeklyItems.fruits.join(", ")
+                  : "Not planned yet"
+              }
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .meal-planner-container {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    @media (min-width: 768px) {
+      .meal-planner-container {
+        flex-direction: row;
+      }
+
+      .form-container {
+        padding-right: 2rem;
+        width: 50vw;
+        height: 100vh;
+        overflow-y: auto;
+      }
+
+      .plan-display-container {
+        position: fixed;
+        top: 0;
+        right: 0;
+        box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+        background-color: #f9f9f9;
+        padding: 2rem;
+        width: 50vw;
+        height: 100vh;
+        overflow-y: auto;
+      }
+    }
+
+    /* Remove the body padding */
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Add some general styles for better readability */
+    h1,
+    h2 {
+      margin-top: 0;
+    }
+
+    fieldset {
+      margin-bottom: 1rem;
+    }
+
+    /* Update the styling for all multiple select elements */
+    select[multiple] {
+      width: 100%;
+      height: 5em;
+    }
+  </style>
+
+  <script>
+    const form = document.getElementById("mealPlanForm") as HTMLFormElement;
+    const mealPlanDisplay = document.getElementById(
+      "mealPlanDisplay"
+    ) as HTMLDivElement;
+
+    type Meal = { main: string; sides: string[] };
+    type MealPlan = Record<string, { breakfast: Meal; dinner: Meal }>;
+    type WeeklyItems = {
+      snacks: string[];
+      desserts: string[];
+      fruits: string[];
+    };
+
+    // Initialize mealPlan and weeklyItems
+    const mealPlan: MealPlan = {};
+    const weeklyItems: WeeklyItems = {
+      snacks: [],
+      desserts: [],
+      fruits: [],
+    };
+
+    // Update handleSelectChange function
+    function handleSelectChange(event: Event) {
+      const input = event.target as HTMLInputElement;
+      const multiSelect = input.closest(".multi-select");
+      const [day, mealType, itemType] = (multiSelect?.id || input.id).split(
+        "-"
+      );
+
+      if (day && mealType) {
+        if (!mealPlan[day]) {
+          mealPlan[day] = {
+            breakfast: { main: "", sides: [] },
+            dinner: { main: "", sides: [] },
+          };
+        }
+        if (itemType === "sides" || multiSelect) {
+          const selectedOptions =
+            multiSelect?.querySelectorAll(".selected-option") || [];
+          mealPlan[day][mealType as "breakfast" | "dinner"].sides = Array.from(
+            selectedOptions
+          ).map((option) => option.textContent?.replace("×", "").trim() || "");
+        } else {
+          mealPlan[day][mealType as "breakfast" | "dinner"].main = input.value;
+        }
+      } else {
+        const weeklyItemKey = (multiSelect?.id ||
+          input.closest(".multi-select")?.id) as keyof WeeklyItems;
+        const selectedOptions =
+          multiSelect?.querySelectorAll(".selected-option") || [];
+        weeklyItems[weeklyItemKey] = Array.from(selectedOptions).map(
+          (option) => option.textContent?.replace("×", "").trim() || ""
+        );
+      }
+
+      updateMealPlanDisplay(mealPlan, weeklyItems);
+    }
+
+    // Add event listeners to all input elements and multi-select components
+    const inputs = form.querySelectorAll('input[type="text"], input[list]');
+    inputs.forEach((input) => {
+      input.addEventListener("change", handleSelectChange);
+      input.addEventListener("keydown", (event) => {
+        if ((event as KeyboardEvent).key === "Enter") {
+          event.preventDefault();
+          handleSelectChange(event);
+        }
+      });
+    });
+
+    const multiSelects = form.querySelectorAll(".multi-select");
+    multiSelects.forEach((multiSelect) => {
+      multiSelect.addEventListener("optionschange", handleSelectChange);
+    });
+
+    function updateMealPlanDisplay(
+      mealPlan: MealPlan,
+      weeklyItems: WeeklyItems
+    ) {
+      const days = [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+      ];
+
+      let html = "";
+      for (const day of days) {
+        const meals = mealPlan[day] || {
+          breakfast: { main: "", sides: [] },
+          dinner: { main: "", sides: [] },
+        };
+        html += `
+          <div class="day-plan">
+            <h3>${day}</h3>
+            <p>Breakfast: <span class="meal breakfast-main">${meals.breakfast.main || "Not planned yet"}</span></p>
+            <p>Breakfast Sides: <span class="meal breakfast-sides">${meals.breakfast.sides.length > 0 ? meals.breakfast.sides.join(", ") : "Not planned yet"}</span></p>
+            <p>Dinner: <span class="meal dinner-main">${meals.dinner.main || "Not planned yet"}</span></p>
+            <p>Dinner Sides: <span class="meal dinner-sides">${meals.dinner.sides.length > 0 ? meals.dinner.sides.join(", ") : "Not planned yet"}</span></p>
+          </div>
+        `;
+      }
+      html += `
+        <div class="weekly-items">
+          <h3>Weekly Items</h3>
+          <p>Snacks: <span class="weekly snacks">${weeklyItems.snacks.length > 0 ? weeklyItems.snacks.join(", ") : "Not planned yet"}</span></p>
+          <p>Desserts: <span class="weekly desserts">${weeklyItems.desserts.length > 0 ? weeklyItems.desserts.join(", ") : "Not planned yet"}</span></p>
+          <p>Fruits: <span class="weekly fruits">${weeklyItems.fruits.length > 0 ? weeklyItems.fruits.join(", ") : "Not planned yet"}</span></p>
+        </div>
+      `;
+      mealPlanDisplay.innerHTML = html;
+    }
+  </script>
+</MainLayout>

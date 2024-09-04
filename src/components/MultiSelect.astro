@@ -1,0 +1,199 @@
+---
+interface Props {
+  id: string;
+  label: string;
+  options: { name: string }[];
+  placeholder?: string;
+}
+
+const { id, label, options, placeholder = "Type to search options" } = Astro.props;
+---
+
+<div class="multi-select-container">
+  <label for={id}>{label}</label>
+  <div class="multi-select" id={id}>
+    <input type="text" placeholder={placeholder} />
+    <div class="selected-options"></div>
+    <div class="options">
+      {options.map((option) => (
+        <label>
+          <input type="checkbox" value={option.name} />
+          {option.name}
+        </label>
+      ))}
+    </div>
+  </div>
+</div>
+
+<style>
+  .multi-select-container {
+    margin-bottom: 1rem;
+  }
+
+  .multi-select {
+    position: relative;
+    width: 100%;
+  }
+
+  .multi-select input[type="text"] {
+    width: 100%;
+    padding: 5px;
+  }
+
+  .multi-select .options {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    max-height: 200px;
+    overflow-y: auto;
+    width: 100%;
+    z-index: 1;
+  }
+
+  .multi-select .options label {
+    display: block;
+    padding: 5px;
+  }
+
+  .multi-select .options label:hover {
+    background-color: #f0f0f0;
+  }
+
+  .selected-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 5px;
+  }
+
+  .selected-option {
+    background-color: #e0e0e0;
+    border-radius: 3px;
+    padding: 2px 5px;
+    display: flex;
+    align-items: center;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    position: relative;
+  }
+
+  .remove-option {
+    margin-left: 5px;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 50%;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    position: relative;
+    z-index: 2;
+  }
+
+  .remove-option:hover {
+    background-color: #777;
+    color: white;
+  }
+</style>
+
+<script>
+  function setupMultiSelect(multiSelect: HTMLElement) {
+    const input = multiSelect.querySelector('input[type="text"]') as HTMLInputElement;
+    const options = multiSelect.querySelector('.options') as HTMLDivElement;
+    const checkboxes = options.querySelectorAll('input[type="checkbox"]');
+    const selectedOptionsContainer = multiSelect.querySelector('.selected-options') as HTMLDivElement;
+
+    input.addEventListener('focus', () => {
+      options.style.display = 'block';
+      // Reset the display of all options when focusing on the input
+      checkboxes.forEach((checkbox: HTMLInputElement) => {
+        const label = checkbox.parentElement as HTMLLabelElement;
+        label.style.display = 'block';
+      });
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!multiSelect.contains(event.target as Node)) {
+        options.style.display = 'none';
+      }
+    });
+
+    input.addEventListener('input', () => {
+      const filter = input.value.toLowerCase();
+      checkboxes.forEach((checkbox: HTMLInputElement) => {
+        const label = checkbox.parentElement as HTMLLabelElement;
+        if (label.textContent?.toLowerCase().includes(filter)) {
+          label.style.display = 'block';
+        } else {
+          label.style.display = 'none';
+        }
+      });
+    });
+
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        const customValue = input.value.trim();
+        if (customValue) {
+          addSelectedOption(multiSelect, customValue);
+          input.value = '';
+          // Hide options after adding a custom value
+          options.style.display = 'none';
+        }
+      }
+    });
+
+    checkboxes.forEach((checkbox: HTMLInputElement) => {
+      checkbox.addEventListener('change', () => {
+        if (checkbox.checked) {
+          addSelectedOption(multiSelect, checkbox.value);
+        } else {
+          removeSelectedOption(multiSelect, checkbox.value);
+        }
+      });
+    });
+  }
+
+  function addSelectedOption(multiSelect: HTMLElement, value: string) {
+    const selectedOptionsContainer = multiSelect.querySelector('.selected-options') as HTMLDivElement;
+    if (!Array.from(selectedOptionsContainer.children).some(child => child.textContent?.includes(value))) {
+      const optionElement = createOptionElement(value);
+      selectedOptionsContainer.appendChild(optionElement);
+      multiSelect.dispatchEvent(new Event('optionschange', { bubbles: true }));
+    }
+  }
+
+  function removeSelectedOption(multiSelect: HTMLElement, value: string) {
+    const selectedOptionsContainer = multiSelect.querySelector('.selected-options') as HTMLDivElement;
+    const optionToRemove = Array.from(selectedOptionsContainer.children).find(child => child.textContent?.includes(value));
+    if (optionToRemove) {
+      optionToRemove.remove();
+      multiSelect.dispatchEvent(new Event('optionschange', { bubbles: true }));
+    }
+  }
+
+  function createOptionElement(value: string) {
+    const optionElement = document.createElement('span');
+    optionElement.className = 'selected-option';
+    optionElement.textContent = value;
+    
+    const removeButton = document.createElement('span');
+    removeButton.className = 'remove-option';
+    removeButton.textContent = '×';
+    removeButton.onclick = (event) => {
+      event.stopPropagation();
+      const multiSelect = optionElement.closest('.multi-select');
+      if (multiSelect) {
+        const checkbox = multiSelect.querySelector(`input[type="checkbox"][value="${value}"]`) as HTMLInputElement;
+        if (checkbox) {
+          checkbox.checked = false;
+        }
+        removeSelectedOption(multiSelect, value);
+      }
+    };
+    
+    optionElement.appendChild(removeButton);
+    return optionElement;
+  }
+
+  // Set up multi-select for all relevant elements
+  document.querySelectorAll('.multi-select').forEach(setupMultiSelect);
+</script>
