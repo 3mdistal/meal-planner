@@ -11,19 +11,19 @@
 
 ## Stage 1.5: UI Cleanup
 
-1. Enhance the overall layout in @MealPlanner.astro:
-   - Adjust the flex layout for better responsiveness
-   - Improve the spacing between form and display sections
-   - Refine the shadow and background color of the plan display container
+1. ~~Enhance the overall layout in @MealPlanner.astro:~~
+   - ~~Adjust the flex layout for better responsiveness~~
+   - ~~Improve the spacing between form and display sections~~
+   - ~~Refine the shadow and background color of the plan display container~~
 
-2. Improve the form aesthetics in @MealPlanForm.astro:
-   - Style the fieldsets and legends for better visual hierarchy
-   - Enhance the appearance of input fields and buttons
-   - Implement a consistent color scheme across form elements
+2. ~~Improve the form aesthetics in @MealPlanForm.astro:~~
+   - ~~Style the fieldsets and legends for better visual hierarchy~~
+   - ~~Enhance the appearance of input fields and buttons~~
+   - ~~Implement a consistent color scheme across form elements~~
 
-3. Refine the DatalistInput component in @DatalistInput.astro:
-   - Style the input field for better visibility
-   - Improve the dropdown appearance of the datalist options
+3. ~~Refine the DatalistInput component in @DatalistInput.astro:~~
+   - ~~Style the input field for better visibility~~
+   - ~~Improve the dropdown appearance of the datalist options~~
 
 4. Enhance the MealPlanDisplay in @MealPlanDisplay.astro:
    - Implement a grid or flex layout for better organization of daily meals

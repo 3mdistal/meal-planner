@@ -7,79 +7,149 @@ const { days, breakfastRecipes, dinnerRecipes, snacks, sides, desserts, fruits }
 
 <form id="mealPlanForm">
   {days.map((day: string) => (
-    <fieldset>
+    <fieldset class="day-fieldset">
       <legend>{day}</legend>
-      <DatalistInput
-        id={`${day}-breakfast-main`}
-        label="Breakfast:"
-        options={breakfastRecipes}
-      />
-      <MultiSelect
-        id={`${day}-breakfast-sides`}
-        label="Breakfast Sides:"
-        options={sides}
-        placeholder="Type or select sides"
-      />
-      <DatalistInput
-        id={`${day}-dinner-main`}
-        label="Dinner:"
-        options={dinnerRecipes}
-      />
-      <MultiSelect
-        id={`${day}-dinner-sides`}
-        label="Dinner Sides:"
-        options={sides}
-        placeholder="Type or select sides"
-      />
+      <div class="meal-inputs">
+        <DatalistInput
+          id={`${day}-breakfast-main`}
+          label="Breakfast:"
+          options={breakfastRecipes}
+        />
+        <MultiSelect
+          id={`${day}-breakfast-sides`}
+          label="Breakfast Sides:"
+          options={sides}
+          placeholder="Type or select sides"
+        />
+      </div>
+      <div class="meal-inputs">
+        <DatalistInput
+          id={`${day}-dinner-main`}
+          label="Dinner:"
+          options={dinnerRecipes}
+        />
+        <MultiSelect
+          id={`${day}-dinner-sides`}
+          label="Dinner Sides:"
+          options={sides}
+          placeholder="Type or select sides"
+        />
+      </div>
     </fieldset>
   ))}
 
-  <fieldset>
+  <fieldset class="weekly-items-fieldset">
     <legend>Weekly Items</legend>
-    <MultiSelect
-      id="snacks"
-      label="Snacks:"
-      options={snacks}
-      placeholder="Type or select snacks"
-    />
-    <MultiSelect
-      id="desserts"
-      label="Desserts:"
-      options={desserts}
-      placeholder="Type or select desserts"
-    />
-    <MultiSelect
-      id="fruits"
-      label="Fruits:"
-      options={fruits}
-      placeholder="Type or select fruits"
-    />
+    <div class="weekly-inputs">
+      <MultiSelect
+        id="snacks"
+        label="Snacks:"
+        options={snacks}
+        placeholder="Type or select snacks"
+      />
+      <MultiSelect
+        id="desserts"
+        label="Desserts:"
+        options={desserts}
+        placeholder="Type or select desserts"
+      />
+      <MultiSelect
+        id="fruits"
+        label="Fruits:"
+        options={fruits}
+        placeholder="Type or select fruits"
+      />
+    </div>
   </fieldset>
 
-  <button type="submit">Save Meal Plan</button>
-  <button type="button" id="copyToClipboard">Copy to Clipboard</button>
-  <button type="button" id="clearMealPlan" class="clear-button">Clear Meal Plan</button>
+  <div class="form-actions">
+    <button type="submit" class="primary-button">Save Meal Plan</button>
+    <button type="button" id="copyToClipboard" class="secondary-button">Copy to Clipboard</button>
+    <button type="button" id="clearMealPlan" class="danger-button">Clear Meal Plan</button>
+  </div>
 </form>
 
 <style>
-  /* Add form-specific styles here */
+  #mealPlanForm {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
   fieldset {
-    margin-bottom: 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
   }
 
-  select[multiple] {
-    width: 100%;
-    height: 5em;
+  .day-fieldset {
+    background-color: #ffffff;
   }
 
-  #copyToClipboard {
-    margin-left: 1rem;
+  .weekly-items-fieldset {
+    background-color: #f0f8ff;
+  }
+
+  legend {
+    font-weight: bold;
+    color: #333;
+    padding: 0 0.5rem;
+    background-color: inherit;
+  }
+
+  .meal-inputs, .weekly-inputs {
+    display: grid;
+    gap: 1rem;
+  }
+
+  @media (min-width: 768px) {
+    .meal-inputs, .weekly-inputs {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-start;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+
+  .primary-button {
     background-color: #4CAF50;
+    color: white;
   }
 
-  .clear-button {
-    margin-left: 1rem;
-    background-color: #ff4136;
+  .primary-button:hover {
+    background-color: #45a049;
+  }
+
+  .secondary-button {
+    background-color: #008CBA;
     color: white;
+  }
+
+  .secondary-button:hover {
+    background-color: #007B9E;
+  }
+
+  .danger-button {
+    background-color: #f44336;
+    color: white;
+  }
+
+  .danger-button:hover {
+    background-color: #da190b;
   }
 </style>
