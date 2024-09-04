@@ -33,30 +33,44 @@ const { days, breakfastRecipes, dinnerRecipes, snacks, sides, desserts, fruits, 
     display: flex;
     flex-direction: column;
     gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+
+  .form-container {
+    flex: 1;
+  }
+
+  .plan-display-container {
+    flex: 1;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+  }
+
+  h2 {
+    margin-top: 0;
+    color: #333;
+    font-size: 1.5rem;
   }
 
   @media (min-width: 768px) {
     .meal-planner-container {
       flex-direction: row;
+      align-items: flex-start;
     }
 
     .form-container {
-      padding-right: 2rem;
-      width: 50vw;
-      height: 100vh;
-      overflow-y: auto;
+      width: 50%;
+      padding-right: 1rem;
     }
 
     .plan-display-container {
-      position: fixed;
-      top: 0;
-      right: 0;
-      box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
-      background-color: #f9f9f9;
-      padding: 2rem;
-      width: 50vw;
-      height: 100vh;
-      overflow-y: auto;
+      width: 50%;
+      position: sticky;
+      top: 1rem;
     }
   }
 </style>
