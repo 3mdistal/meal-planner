@@ -1,6 +1,6 @@
-/* @import "open-props/style";
+@import "open-props/style";
 
-:root {
+/* :root {
   --max-width: 1100px;
   --border-radius: var(--radius-2);
   --font-mono: var(--font-mono);

@@ -1,4 +1,5 @@
 import { component$, useStore, useVisibleTask$, $ } from "@builder.io/qwik";
+import { Button } from "@/components/ui/Button";
 
 interface Recipe {
   id: number;
@@ -140,12 +141,12 @@ export const MealPlanner = component$(() => {
       <div class="header">
         <h1>Meal Planner</h1>
         <div class="button-group">
-          <button onClick$={addDay} class="button button-primary">
+          <Button onClick$={addDay} variant="default" size="sm">
             Add Day
-          </button>
-          <button onClick$={viewMealPlan} class="button button-secondary">
+          </Button>
+          <Button onClick$={viewMealPlan} variant="secondary" size="sm">
             View Meal Plan
-          </button>
+          </Button>
         </div>
       </div>
       <div id="recipeScratchpad" class="card">
@@ -153,7 +154,7 @@ export const MealPlanner = component$(() => {
         <div class="input-group">
           <input id="newRecipe" type="text" placeholder="Add a new recipe" />
           <input id="newQuantity" type="number" min="1" value="1" />
-          <button
+          <Button
             onClick$={() => {
               const newRecipe = (
                 document.getElementById("newRecipe") as HTMLInputElement
@@ -173,10 +174,11 @@ export const MealPlanner = component$(() => {
                 ).value = "1";
               }
             }}
-            class="button button-primary"
+            variant="default"
+            size="sm"
           >
             Add
-          </button>
+          </Button>
         </div>
         <div id="recipeList" class="recipe-grid">
           {state.recipes.map((recipe) => (
@@ -197,12 +199,13 @@ export const MealPlanner = component$(() => {
                   }
                 />
               </div>
-              <button
-                class="button button-secondary"
+              <Button
+                variant="secondary"
                 onClick$={() => removeRecipe(recipe.id)}
+                size="sm"
               >
                 Remove
-              </button>
+              </Button>
             </div>
           ))}
         </div>
@@ -212,24 +215,27 @@ export const MealPlanner = component$(() => {
           <div key={dayIndex} class="day-card">
             <h2>Day {dayIndex + 1}</h2>
             <div class="button-group">
-              <button
-                class="button button-primary"
+              <Button
+                variant="default"
+                size="sm"
                 onClick$={() => addMeal(dayIndex)}
               >
                 Add Meal
-              </button>
-              <button
-                class="button button-secondary"
+              </Button>
+              <Button
+                variant="secondary"
                 onClick$={() => removeMeal(dayIndex)}
+                size="sm"
               >
                 Remove Meal
-              </button>
-              <button
-                class="button button-secondary"
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
                 onClick$={() => removeDay(dayIndex)}
               >
                 Remove Day
-              </button>
+              </Button>
             </div>
             {day.meals.map((meal, mealIndex) => (
               <div key={mealIndex} class="meal-item">
