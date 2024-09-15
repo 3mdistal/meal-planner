@@ -1,7 +1,6 @@
 import { defineCollection, z } from "astro:content";
 
-const schemaPath =
-  "/Users/monkey/Downloads/Coding Projects/teenylilapps/apps/mini/meal-planner/.astro/collections/";
+const schemaPath = "./.astro/collections/";
 
 const recipes = defineCollection({
   type: "data",
