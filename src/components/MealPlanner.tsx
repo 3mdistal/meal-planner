@@ -1,5 +1,6 @@
 import { component$, useStore, useVisibleTask$, $ } from "@builder.io/qwik";
 import { Button } from "@/components/ui/Button";
+import { SelectOption } from "@/components/ui/SelectOption";
 
 interface Recipe {
   id: number;
@@ -22,7 +23,6 @@ export const MealPlanner = component$(() => {
     recipes: [],
   });
 
-  // Replace useTask$ with useVisibleTask$
   useVisibleTask$(() => {
     const storedMealPlan = localStorage.getItem("mealPlan");
     const storedRecipes = localStorage.getItem("recipes");
@@ -250,11 +250,13 @@ export const MealPlanner = component$(() => {
                     )
                   }
                 >
-                  <option value="">Select a recipe</option>
+                  <SelectOption value="" label="Select a recipe" />
                   {state.recipes.map((recipe) => (
-                    <option key={recipe.id} value={recipe.id}>
-                      {recipe.name}
-                    </option>
+                    <SelectOption
+                      key={recipe.id}
+                      value={recipe.id}
+                      label={recipe.name}
+                    />
                   ))}
                 </select>
                 {meal && (
