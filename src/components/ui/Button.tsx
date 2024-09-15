@@ -39,8 +39,13 @@ export const Button = component$<ButtonProps>(
       .join(" ");
 
     return (
-      <button class={buttonClasses} disabled={disabled || loading} {...props}>
-        {loading && <span class={styles.spinner} />}
+      <button
+        class={buttonClasses}
+        disabled={disabled || loading}
+        aria-disabled={disabled || loading}
+        {...props}
+      >
+        {loading && <span class={styles.spinner} aria-label="Loading" />}
         {icon && <span class={styles.icon}>{icon}</span>}
         <Slot />
       </button>

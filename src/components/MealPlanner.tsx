@@ -28,7 +28,7 @@ export const MealPlanner = component$(() => {
     const storedRecipes = localStorage.getItem("recipes");
     state.mealPlan = storedMealPlan
       ? JSON.parse(storedMealPlan)
-      : [{ meals: [null, null, null] }, { meals: [null, null, null] }];
+      : Array.from({ length: 7 }, () => ({ meals: [null, null, null] }));
     state.recipes = storedRecipes ? JSON.parse(storedRecipes) : [];
   });
 
@@ -62,6 +62,7 @@ export const MealPlanner = component$(() => {
   });
 
   const updateRecipeQuantity = $((id: number, quantity: number) => {
+    if (quantity < 0) return;
     state.recipes = state.recipes.map((recipe) =>
       recipe.id === id ? { ...recipe, quantity: Math.max(0, quantity) } : recipe
     );
@@ -84,6 +85,7 @@ export const MealPlanner = component$(() => {
 
   const updateMealQuantity = $(
     (dayIndex: number, mealIndex: number, quantity: number) => {
+      if (quantity < 1) return;
       const meal = state.mealPlan[dayIndex]?.meals[mealIndex];
       if (meal) {
         meal.quantity = quantity;
@@ -93,7 +95,7 @@ export const MealPlanner = component$(() => {
   );
 
   const addDay = $(() => {
-    state.mealPlan.push({ meals: [null] });
+    state.mealPlan.push({ meals: [null, null, null] });
     saveMealPlan();
   });
 

@@ -8,6 +8,7 @@ const recipes = defineCollection({
     $schema: z.literal(`${schemaPath}recipes.schema.json`),
     name: z.string(),
     type: z.enum(["breakfast", "dinner", "side", "snack", "dessert", "fruit"]),
+    ingredients: z.array(z.string()).optional(),
   }),
 });
 
